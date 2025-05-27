@@ -16,6 +16,7 @@ int main() {
     std::cout << "✅ Token : ";
     for (auto tokens : result.tokens)
         std::cout << tokens.c_str() << " ";
+    std::cout << "\n";
 
     std::cout << "🎯 Attention Mask: ";
     for (auto mask : result.attention_mask)

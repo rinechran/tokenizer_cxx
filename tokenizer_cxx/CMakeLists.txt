@@ -16,10 +16,18 @@ set(RUST_LIB "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_DIR}/lib${PROJECT_NAME}.a")
 set(RUST_CXX "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.cpp")
 set(RUST_HDR "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.h")
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT result OUTPUT output)
+if(result)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 add_library(${PROJECT_NAME} STATIC ${RUST_CXX})
 
+set_target_properties(${PROJECT_NAME} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 add_custom_command(
-    OUTPUT ${RUST_CXX} ${RUST_LIB}  # ✅ 추가
+    OUTPUT ${RUST_CXX} ${RUST_LIB}
     COMMAND CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR} ${CARGO_CMD}
     COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/${PROJECT_NAME}/src/lib.rs.cc ${RUST_CXX}
     COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/${PROJECT_NAME}/src/lib.rs.h ${RUST_HDR}
@@ -27,3 +35,4 @@ add_custom_command(
 )
 
 target_link_libraries(${PROJECT_NAME} pthread dl ${RUST_LIB})
+
