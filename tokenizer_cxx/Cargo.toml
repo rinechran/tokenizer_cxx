@@ -1,0 +1,14 @@
+[package]
+name = "tokenizer_cxx"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cxx = "1.0.158"
+tokenizers = "0.21.1"
+
+[build-dependencies]
+cxx-build = "1.0.158"
+
+[lib]
+crate-type = ["staticlib"]
