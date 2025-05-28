@@ -12,14 +12,21 @@ impl TokenizerWrapper {
         Self { inner: tokenizer }
     }
 
-    pub fn encode(&self, text: &CxxString) -> ffi::EncodeResult {
-    let encoding = self.inner.encode(text.to_str().unwrap(), true).unwrap();
+    pub fn encode(&self, text: &CxxString , add_special_tokens: bool  ) -> ffi::EncodeResult {
+    let encoding = self.inner.encode(
+            text.to_str().unwrap(), add_special_tokens
+        ).unwrap();
         
         ffi::EncodeResult {
             ids: encoding.get_ids().to_vec(),
             tokens: encoding.get_tokens().to_vec(),
             attention_mask: encoding.get_attention_mask().to_vec(),
         }
+    }
+    pub fn decode(&self, ids: &Vec<u32>, skip_special_tokens: bool) -> String {
+        self.inner
+            .decode(ids, skip_special_tokens)
+            .unwrap_or_else(|_| "".to_string())
     }
 }
 
@@ -36,7 +43,8 @@ mod ffi {
         type TokenizerWrapper;
 
         fn make_tokenizer(file: &CxxString) -> Box<TokenizerWrapper>;
-        fn encode(self: &TokenizerWrapper, text: &CxxString) -> EncodeResult;
+        fn encode(self: &TokenizerWrapper,text: &CxxString , add_special_tokens: bool ) -> EncodeResult;
+        fn decode(self: &TokenizerWrapper, ids: &Vec<u32> , skip_special_tokens: bool ) -> String;
     }
 }
 
